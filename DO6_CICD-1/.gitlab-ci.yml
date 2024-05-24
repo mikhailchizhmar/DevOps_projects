@@ -1,0 +1,50 @@
+stages:
+    - build
+    - style
+    - test
+    - deploy
+
+building:
+  stage: build
+  tags:
+    - newtonbe_runner
+  script:
+    - cd src/cat
+    - make s21_cat
+    - cd ../grep
+    - make s21_grep
+  artifacts:
+    paths:
+      - src/cat
+      - src/grep
+    expire_in: 30 days
+
+codestyle:
+  stage: style
+  tags:
+    - newtonbe_runner
+  script:
+    - cd src/cat
+    - make style
+    - cd ../grep
+    - make style
+
+test_code:
+  stage: test
+  tags:
+    - newtonbe_runner
+  script:
+    - cd src/cat
+    - bash s21_cat_test.sh
+    - cd ../grep
+    - bash s21_grep_test.sh
+  when: on_success
+
+deploy:
+  stage: deploy
+  tags:
+    - newtonbe_runner
+  script:
+    - chmod 777 src/part5.sh
+    - bash src/part5.sh
+  when: manual
